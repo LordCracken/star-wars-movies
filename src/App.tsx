@@ -1,29 +1,33 @@
+import { useState } from 'react';
+
 import MoviesList from './components/MoviesList';
+
+import { IMovieData } from './interfaces';
 import './App.css';
 
 const App = () => {
-  const dummyMovies = [
-    {
-      id: 1,
-      title: 'Some Dummy Movie',
-      openingText: 'This is the opening text of the movie',
-      releaseDate: '2021-05-18',
-    },
-    {
-      id: 2,
-      title: 'Some Dummy Movie 2',
-      openingText: 'This is the second opening text of the movie',
-      releaseDate: '2021-05-19',
-    },
-  ];
+  const [movies, setMovies] = useState<IMovieData[]>([]);
+
+  const fetchMoviesHandler = async () => {
+    const response = await fetch('https://swapi.dev/api/films');
+    const data = await response.json();
+
+    const transformedMovies = data.results.map((movieData: any) => ({
+      id: movieData.episode_id,
+      title: movieData.title,
+      openingText: movieData.opening_crawl,
+      releaseDate: movieData.release_date,
+    }));
+    setMovies(transformedMovies);
+  };
 
   return (
     <>
       <section>
-        <button>Fetch Movies</button>
+        <button onClick={fetchMoviesHandler}>Fetch Movies</button>
       </section>
       <section>
-        <MoviesList movies={dummyMovies} />
+        <MoviesList movies={movies} />
       </section>
     </>
   );
